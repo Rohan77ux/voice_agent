@@ -1,0 +1,57 @@
+# Virtual Environment
+.venv/
+venv/
+env/
+
+# Python Cache
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Environment Variables
+.env
+
+# VS Code
+.vscode/
+
+# MacOS
+.DS_Store
+
+# Logs
+*.log
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Build Files
+build/
+dist/
+*.egg-info/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Vector Database (if generated automatically)
+vector_db/
+
+# Downloads / Temporary Files
+downloades/
+
+# Audio Files (if generated)
+*.wav
+*.mp3
+*.flac
+
+# ChromaDB / FAISS / Embeddings
+chroma_db/
+faiss_index/
+
+# Secrets
+secrets.json
+credentials.json
+
+# Temporary files
+tmp/
+temp/
