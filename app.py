@@ -1,17 +1,12 @@
 import streamlit as st
 import time
 import traceback
+import sys
+import os
 from dotenv import load_dotenv
 
+# SAFE IMPORT
 from utils.audio_processor import process_input
-from core.transcriber import transcribe_all
-from core.summarizer import summarize, generate_title
-from core.extractor import (
-    extract_action_items,
-    extract_key_decisions,
-    extract_questions,
-)
-from core.rag_engine import build_rag_chain, ask_question
 
 load_dotenv()
 
@@ -24,20 +19,17 @@ st.set_page_config(
     layout="wide",
     initial_sidebar_state="expanded",
 )
-# ─── Streamlit Render Verification ─────────────────────────────────────────────
-try:
-    st.write("✅ Streamlit Loaded Successfully")
 
-    # Debug info
-    import sys
-    import os
+# ─────────────────────────────────────────────────────────────
+# DEBUG INFO
+# ─────────────────────────────────────────────────────────────
+st.sidebar.markdown("## 🔍 Debug")
 
-    st.sidebar.markdown("### 🔍 Debug Info")
-    st.sidebar.write("Python:", sys.version)
-    st.sidebar.write("Port:", os.environ.get("PORT", "Not Found"))
+st.sidebar.write("Python:", sys.version)
+st.sidebar.write("PORT:", os.environ.get("PORT", "Not Found"))
 
-except Exception as e:
-    st.error(f"Streamlit failed to initialize: {e}")
+st.write("✅ Streamlit Loaded Successfully")
+
 # ─────────────────────────────────────────────────────────────
 # CUSTOM CSS
 # ─────────────────────────────────────────────────────────────
@@ -178,23 +170,6 @@ html, body, [class*="css"] {
     font-weight: bold;
 }
 
-.badge {
-    padding: 0.25rem 0.7rem;
-    border-radius: 5px;
-    font-size: 0.7rem;
-    font-weight: bold;
-}
-
-.badge-purple {
-    background: rgba(124,58,237,0.2);
-    color: #b794ff;
-}
-
-.badge-green {
-    background: rgba(16,185,129,0.15);
-    color: #10b981;
-}
-
 </style>
 """, unsafe_allow_html=True)
 
@@ -264,6 +239,16 @@ st.markdown("---")
 # ─────────────────────────────────────────────────────────────
 if run_btn:
 
+    # LAZY IMPORTS
+    from core.transcriber import transcribe_all
+    from core.summarizer import summarize, generate_title
+    from core.extractor import (
+        extract_action_items,
+        extract_key_decisions,
+        extract_questions
+    )
+    from core.rag_engine import build_rag_chain, ask_question
+
     if not source.strip():
         st.error("Please enter a YouTube URL or file path.")
 
@@ -301,7 +286,7 @@ if run_btn:
             with st.spinner("🧠 Building AI chat engine..."):
                 rag_chain = build_rag_chain(transcript)
 
-            # SAVE
+            # SAVE RESULTS
             st.session_state.result = {
                 "title": title,
                 "transcript": transcript,
@@ -386,7 +371,7 @@ if st.session_state.result:
 
     st.markdown("---")
 
-    # CHAT
+    # CHAT SECTION
     st.markdown("## 💬 Chat with your Meeting")
 
     if st.session_state.chat_history:
@@ -425,6 +410,8 @@ if st.session_state.result:
     if st.button("Send"):
 
         if user_input.strip():
+
+            from core.rag_engine import ask_question
 
             with st.spinner("Thinking..."):
 
